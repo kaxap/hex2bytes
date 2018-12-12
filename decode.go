@@ -1,4 +1,4 @@
-package main
+package hex2bytes
 
 import (
 	"errors"
