@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kaxap/hex2bytes.svg?branch=master)](https://travis-ci.org/kaxap/hex2bytes)
+
 # Info
 
 Decodes hex strings into byte slice. Hex bytes must be delimited with space and be in upper case.
