@@ -44,20 +44,23 @@ func DecodeSpaceDelimitedHex(s string) ([]byte, error) {
 	var b byte = 0
 	result := make([]byte, 0, len(s)/3*2)
 	for i := 0; i < len(s); i++ {
+
+		// expecting space char
 		if !readyForFirst && !readyForSecond {
+
 			if s[i] == 0x20 {
-				if readyForFirst || readyForSecond {
-					return nil, InvalidDataError
-				}
+				// next char should be data (first half of an octet)
 				readyForFirst = true
 				readyForSecond = false
 				continue
 			} else {
+				// only space delimiters are allowed
 				return nil, InvalidDataError
 			}
 		}
 
 		if readyForFirst {
+			// parse first half of the octet
 			c, valid := fromHexChar(s[i])
 			if !valid {
 				return nil, InvalidDataError
@@ -65,27 +68,33 @@ func DecodeSpaceDelimitedHex(s string) ([]byte, error) {
 
 			b = c << 4
 			readyForFirst = false
+
+			// expect second half in next char
 			readyForSecond = true
 			continue
 		}
 
 		if readyForSecond {
+			// parse second half of the octet
 			c, valid := fromHexChar(s[i])
 			if !valid {
 				return nil, InvalidDataError
 			}
 
+			// add to byte slice
 			b |= c
 			result = append(result, b)
+
+			// next char should be space (not second and not first half of an octet -> space)
 			readyForSecond = false
 		}
 
 	}
 
+	// any leftovers -> data is invalid
 	if readyForSecond || readyForFirst {
 		return nil, InvalidDataError
 	}
 
 	return result, nil
-
 }

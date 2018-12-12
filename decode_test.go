@@ -3,7 +3,6 @@ package hex2bytes
 import (
 	"bytes"
 	"fmt"
-	"github.com/pkg/profile"
 	"strings"
 	"testing"
 )
@@ -34,6 +33,7 @@ func getInvalidTestData() map[string]error {
 	return map[string]error{
 		"91 77 70 10 00 00 F5 ": InvalidDataError,
 		"1o":                    InvalidDataError,
+		"FG":                    InvalidDataError,
 		"-0":                    InvalidDataError,
 		" 00":                   InvalidDataError,
 		"00 ":                   InvalidDataError,
@@ -64,6 +64,22 @@ func TestDecodeSpaceDelimitedHex2(t *testing.T) {
 
 func TestDecodeSpaceDelimitedHexLeadingSpaceErr(t *testing.T) {
 	data := " 00"
+	_, err := DecodeSpaceDelimitedHex(data)
+
+	if err == nil {
+		t.Errorf("Expected error while parsing \"%s\": but got success\n", data)
+		return
+	}
+
+	if err != InvalidDataError {
+		t.Errorf("Expected error while parsing \"%s\": got %s\n", data, err)
+		return
+	}
+
+}
+
+func TestDecodeSpaceDelimitedHexSecondCharErr(t *testing.T) {
+	data := "FF FF FG"
 	_, err := DecodeSpaceDelimitedHex(data)
 
 	if err == nil {
@@ -190,29 +206,30 @@ func TestDecodeSpaceDelimitedHexThreeBytes(t *testing.T) {
 	}
 }
 
-func TestDecodeSpaceDelimitedHexFourBytes(t *testing.T) {
-
-	defer profile.Start(profile.MemProfile).Stop()
-	for i := 0; i < 256; i++ {
-		for j := 0; j < 256; j++ {
-			for k := 0; k < 256; k++ {
-				for l := 0; l < 256; l++ {
-
-					data := strings.ToUpper(fmt.Sprintf("%.2x %.2x %.2x %.2x", i, j, k, l))
-					b, err := DecodeSpaceDelimitedHex(data)
-					if err != nil {
-						t.Errorf("Could not decode data %s, error: %s", data, err)
-						return
-					}
-
-					if int(b[0]) != i || int(b[1]) != j || int(b[2]) != k || int(b[3]) != l {
-						t.Errorf("Error parsing data: expected [%.2x, %.2x, %.2x, %.2x], got [%.2x, %.2x, %.2x, %.2x]",
-							i, j, k, l, b[0], b[1], b[2], b[3])
-						return
-					}
-
-				}
-			}
-		}
-	}
-}
+// really long test
+//func TestDecodeSpaceDelimitedHexFourBytes(t *testing.T) {
+//
+//	defer profile.Start(profile.MemProfile).Stop()
+//	for i := 0; i < 256; i++ {
+//		for j := 0; j < 256; j++ {
+//			for k := 0; k < 256; k++ {
+//				for l := 0; l < 256; l++ {
+//
+//					data := strings.ToUpper(fmt.Sprintf("%.2x %.2x %.2x %.2x", i, j, k, l))
+//					b, err := DecodeSpaceDelimitedHex(data)
+//					if err != nil {
+//						t.Errorf("Could not decode data %s, error: %s", data, err)
+//						return
+//					}
+//
+//					if int(b[0]) != i || int(b[1]) != j || int(b[2]) != k || int(b[3]) != l {
+//						t.Errorf("Error parsing data: expected [%.2x, %.2x, %.2x, %.2x], got [%.2x, %.2x, %.2x, %.2x]",
+//							i, j, k, l, b[0], b[1], b[2], b[3])
+//						return
+//					}
+//
+//				}
+//			}
+//		}
+//	}
+//}
