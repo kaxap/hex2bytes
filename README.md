@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/kaxap/hex2bytes.svg?branch=master)](https://travis-ci.org/kaxap/hex2bytes)
+[![Coverage Status](https://coveralls.io/repos/github/kaxap/hex2bytes/badge.svg?branch=master)](https://coveralls.io/github/kaxap/bytes2hex?branch=master)
 
 # Info
 
